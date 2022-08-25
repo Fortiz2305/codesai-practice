@@ -1,4 +1,5 @@
-import { CategoryList } from './category_list';
+import { CategorySpendings } from './category_spending';
+import { Alert } from './alert';
 
 export class UnusualSpendingsService {
 
@@ -15,35 +16,15 @@ export class UnusualSpendingsService {
     const paymentsThisMonth = this.paymentRepository.find(userId, currentMonth);
     const paymentsPreviousMonth = this.paymentRepository.find(userId, currentMonth - 1);
 
-    const paymentsByCategoryThisMonth = CategoryList.from(paymentsThisMonth);
-    const paymentsByCategoryPreviousMonth = CategoryList.from(paymentsPreviousMonth);
-
-    const incrementsThisMonth = Object.keys(paymentsByCategoryThisMonth).reduce((cummulative, current) => {
-      const paymentsThisMonth = paymentsByCategoryThisMonth[current];
-      const paymentsPreviousMonth = paymentsByCategoryPreviousMonth[current];
-      if (paymentsPreviousMonth) {
-        cummulative[current] = ((paymentsThisMonth - paymentsPreviousMonth) / paymentsThisMonth) * 100;
-      }
-      return cummulative;
-    }, {});
-
-
-    const shouldNotify = Object.values(incrementsThisMonth).some(value => value > 50);
-
-    const unusualAmount = 50;
-    const title = `Unusual spending of $${unusualAmount} detected!`;
+    const spendingsByCategory = CategorySpendings.from(paymentsPreviousMonth, paymentsThisMonth)
+    
+    const shouldNotify = spendingsByCategory.some(spendings => spendings.isUnusual);
 
     if (shouldNotify) {
       this.notifier.notify({
         contactDetails: user.contactDetails,
-        alert: {
-          title,
-          description: a
-        }
+        alert: Alert.from(spendingsByCategory)
       });
     }
   }
 }
-
-
-const a = 'Hello card user!\n\tWe have detected unusually high spending on your card in these categories:\n\t* You spent $50 on restaurant\n\tLove,\n\tThe Credit Card Company';
