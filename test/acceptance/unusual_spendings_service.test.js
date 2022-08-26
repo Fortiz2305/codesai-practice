@@ -9,10 +9,16 @@ describe('UnusualSpendingsService', () => {
     const paymentRepository = {
       find: (userId, month) => {
         if (month === currentMonth) {
-          return [{ price: 50, description: 'aDescription', category: 'restaurant' }];
+          return [
+            { price: 50, description: 'aDescription', category: 'restaurant' },
+            { price: 10, description: 'aDescription', category: 'videogames' },
+          ];
         }
-        return [{ price: 10, description: 'aDescription', category: 'restaurant' }];
-      }
+        return [
+          { price: 10, description: 'aDescription', category: 'restaurant' },
+          { price: 10, description: 'aDescription', category: 'videogames' },
+        ];
+      },
     };
     const notifier = { notify: jest.fn() };
     const userRepository = { find: (userId) => ({ id: userId, contactDetails: { email: 'user@mail.com' } }) };
@@ -20,7 +26,8 @@ describe('UnusualSpendingsService', () => {
 
     service.run(userId);
 
-    const expectedAlert = 'Hello card user!\n\tWe have detected unusually high spending on your card in these categories:\n\t* You spent $50 on restaurant\n\tLove,\n\tThe Credit Card Company';
+    const expectedAlert =
+      'Hello card user!\n\tWe have detected unusually high spending on your card in these categories:\n\t* You spent $50 on restaurant\n\tLove,\n\tThe Credit Card Company';
     expect(notifier.notify).toHaveBeenCalledWith({
       contactDetails: { email: 'user@mail.com' },
       alert: { title: 'Unusual spending of $50 detected!', description: expectedAlert },
@@ -35,7 +42,7 @@ describe('UnusualSpendingsService', () => {
           return [{ price: 10, description: 'aDescription', category: 'restaurant' }];
         }
         return [{ price: 10, description: 'aDescription', category: 'restaurant' }];
-      }
+      },
     };
     const notifier = { notify: jest.fn() };
     const userRepository = { find: (userId) => ({ id: userId, contactDetails: { email: 'user@mail.com' } }) };

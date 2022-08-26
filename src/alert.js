@@ -1,10 +1,9 @@
-const INTRODUCTION = "Hello card user!\n\tWe have detected unusually high spending on your card in these categories:\n\t";
-const ENDING = "Love,\n\tThe Credit Card Company";
+const INTRODUCTION =
+  'Hello card user!\n\tWe have detected unusually high spending on your card in these categories:\n\t';
+const ENDING = 'Love,\n\tThe Credit Card Company';
 
 export class Alert {
-
-  static from(categorySpendings) {
-    const unusualSpendings = categorySpendings.filter(spending => spending.isUnusual);
+  static from(unusualSpendings) {
     const totalUnusualAmount = unusualSpendings.reduce(
       (acc, categorySpending) => acc + categorySpending.currentSpending,
       0
@@ -14,7 +13,7 @@ export class Alert {
     const categoryLines = unusualSpendings.map((categorySpending) => {
       return `* You spent $${categorySpending.currentSpending} on ${categorySpending.name}\n\t`;
     });
-    const description = `${INTRODUCTION}${categoryLines.join("")}${ENDING}`;
+    const description = `${INTRODUCTION}${categoryLines.join('')}${ENDING}`;
 
     return { title, description };
   }
